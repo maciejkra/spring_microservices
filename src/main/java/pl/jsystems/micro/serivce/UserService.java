@@ -6,6 +6,7 @@ import pl.jsystems.micro.model.Role;
 import pl.jsystems.micro.model.User;
 import pl.jsystems.micro.repository.UserRepository;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Service        // klasa o znaczeniu specjalnym - implementuje logikę biznesową aplikacji
@@ -28,5 +29,8 @@ public class UserService {
             userRepository.save(userToSave);
         }
         return userToSave;
+    }
+    public Optional<User> getUserById(long userId){
+        return userRepository.findById(userId);
     }
 }
