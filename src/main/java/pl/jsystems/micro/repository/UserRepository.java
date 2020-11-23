@@ -8,4 +8,6 @@ import pl.jsystems.micro.model.User;
 @Repository         // interfejs o zanczeniu specjalnym implementujący metody mapujące zapytania SQL
                                     // JpaReposiroty<KlasaModelu, TypKluczaGłównego>
 public interface UserRepository extends JpaRepository<User, Long> {
+    // SELECT * FROM users u WHERE u.email = ?;
+    User findFirstByEmail(String email);
 }

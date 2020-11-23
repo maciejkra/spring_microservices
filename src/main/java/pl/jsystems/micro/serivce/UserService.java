@@ -16,6 +16,11 @@ public class UserService {
     }
 
     public User addUser(User user){
-        return userRepository.save(user);
+        User userToSave = null;
+        if(userRepository.findFirstByEmail(user.getEmail()) == null){
+            userToSave = user;
+            userRepository.save(user);
+        }
+        return userToSave;
     }
 }
