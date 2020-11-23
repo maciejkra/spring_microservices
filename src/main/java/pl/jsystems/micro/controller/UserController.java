@@ -45,9 +45,6 @@ public class UserController {
             @RequestParam("password") String password
     ){
         Optional<Role> roleOptional = roleService.getRolerById(1L);
-        if(roleOptional.isPresent()) {
-            return userService.addUser(new User(email, password), roleOptional.get());
-        }
-        return null;
+        return roleOptional.map(role -> userService.addUser(new User(email, password), role)).orElse(null);
     }
 }
