@@ -1,14 +1,21 @@
 package pl.jsystems.micro.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import pl.jsystems.micro.model.User;
+import pl.jsystems.micro.serivce.UserService;
+
 //@Controller       // -> zwraca szablony widoków
 @RestController     // klasa o secjalnym znaczeniu - mapująca adresy URL na wywołanie metod
                     // -> zwraca API
 public class UserController {
+    private UserService userService;
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
     @GetMapping("/")        // localhost:8080/
     public String home(){
         return "Hello";
@@ -26,5 +33,11 @@ public class UserController {
     ){
         return String.format("Hello %s %s", name, lastName);
     }
-
+    @PostMapping("/users/addUser")
+    public User addUser(
+            @RequestParam("email") String email,
+            @RequestParam("password") String password
+    ){
+        return userService.addUser(new User(email,password));
+    }
 }

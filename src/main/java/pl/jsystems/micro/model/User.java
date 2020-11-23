@@ -22,10 +22,13 @@ public class User {
     private String email;
     private String password;
     @Column(name = "registration_time")
-    private LocalDateTime registrationDateTime;
+    private LocalDateTime registrationDateTime = LocalDateTime.now();
     private boolean status;
     @Transient
     private String secret = "SECRET CODE";
 
-
+    public User(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 }
