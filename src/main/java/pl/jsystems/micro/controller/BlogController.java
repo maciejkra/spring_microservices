@@ -11,7 +11,11 @@ import pl.jsystems.micro.serivce.RoleService;
 import pl.jsystems.micro.serivce.UserService;
 
 import javax.validation.Valid;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 //@Controller       // -> zwraca szablony widoków
 @RestController     // klasa o secjalnym znaczeniu - mapująca adresy URL na wywołanie metod
@@ -59,6 +63,7 @@ public class BlogController {
     ){
         if(bindingResult.hasErrors()){      // jeśli występują błędy walidacji
             bindingResult.getFieldErrors().forEach(System.out::println);
+            Arrays.stream(bindingResult.getSuppressedFields()).forEach(System.out::println);
             return false;
         }
         Optional<User> userOptional = userService.getUserById(postDto.getAuthorId());
@@ -68,5 +73,14 @@ public class BlogController {
         }
         postService.addPost(postDto, userOptional.get());
         return true;
+    }
+    // [
+    //     "IT" : 1,
+    //     "DEV_OPS" : 2
+    // ]
+    @GetMapping("/posts/stats")
+    public Map getCategoryStatistics(){
+        return postService.getCategoryStatistics().stream()
+                .collect(Collectors.toMap(o -> o[0],o -> o[1]));
     }
 }

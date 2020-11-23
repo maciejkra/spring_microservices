@@ -21,6 +21,7 @@ public class Post {
     private String title;
     @Type(type = "text")    // mapuje typ kolumny w tabelce db na longtext
     private String content;
+    @Enumerated(value = EnumType.STRING)
     private Category category;
     private LocalDateTime publicationDateTime = LocalDateTime.now();
     @ManyToOne(fetch = FetchType.EAGER)

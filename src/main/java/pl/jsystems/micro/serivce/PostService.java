@@ -7,6 +7,8 @@ import pl.jsystems.micro.model.User;
 import pl.jsystems.micro.model.dtos.PostDto;
 import pl.jsystems.micro.repository.PostRepository;
 
+import java.util.List;
+
 @Service
 public class PostService {
     private PostRepository postRepository;
@@ -22,5 +24,7 @@ public class PostService {
         post.setAuthor(author);
         postRepository.save(post);
     }
-
+    public List<Object[]> getCategoryStatistics(){
+        return postRepository.getCategoryStatistics();
+    }
 }
