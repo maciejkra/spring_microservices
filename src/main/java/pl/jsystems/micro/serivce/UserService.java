@@ -2,8 +2,11 @@ package pl.jsystems.micro.serivce;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.jsystems.micro.model.Role;
 import pl.jsystems.micro.model.User;
 import pl.jsystems.micro.repository.UserRepository;
+
+import java.util.Set;
 
 @Service        // klasa o znaczeniu specjalnym - implementuje logikę biznesową aplikacji
 public class UserService {
@@ -15,11 +18,14 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User addUser(User user){
+    public User addUser(User user, Role role){
         User userToSave = null;
         if(userRepository.findFirstByEmail(user.getEmail()) == null){
             userToSave = user;
-            userRepository.save(user);
+            Set<Role> roles = user.getRoles();      // do aktualnego zbioru ról dodaję role
+            roles.add(role);
+            userToSave.setRoles(roles);
+            userRepository.save(userToSave);
         }
         return userToSave;
     }
