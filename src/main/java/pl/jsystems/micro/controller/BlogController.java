@@ -1,8 +1,10 @@
 package pl.jsystems.micro.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.validation.*;
 import org.springframework.web.bind.annotation.*;
+import pl.jsystems.micro.model.Post;
 import pl.jsystems.micro.model.Role;
 import pl.jsystems.micro.model.User;
 import pl.jsystems.micro.model.dtos.PostDto;
@@ -82,5 +84,14 @@ public class BlogController {
     public Map getCategoryStatistics(){
         return postService.getCategoryStatistics().stream()
                 .collect(Collectors.toMap(o -> o[0],o -> o[1]));
+    }
+    @GetMapping("/posts")
+    public List<Post> getAllPostsOrdered(
+            @RequestParam("fieldName") String fieldName,
+            @RequestParam("isAscDirection") boolean isAscDirection
+    ){
+        return postService.getAllPostsOrdered(
+                fieldName,
+                isAscDirection ? Sort.Direction.ASC : Sort.Direction.DESC);
     }
 }

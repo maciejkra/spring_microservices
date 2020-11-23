@@ -1,6 +1,7 @@
 package pl.jsystems.micro.serivce;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import pl.jsystems.micro.model.Post;
 import pl.jsystems.micro.model.User;
@@ -26,5 +27,8 @@ public class PostService {
     }
     public List<Object[]> getCategoryStatistics(){
         return postRepository.getCategoryStatistics();
+    }
+    public List<Post> getAllPostsOrdered(String fieldName, Sort.Direction sortDirection){
+        return postRepository.findAll(Sort.by(sortDirection,fieldName));
     }
 }

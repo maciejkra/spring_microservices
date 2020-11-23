@@ -15,4 +15,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             nativeQuery = true
     )
     List<Object[]> getCategoryStatistics();
+
 }
