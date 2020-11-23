@@ -1,5 +1,6 @@
 package pl.jsystems.micro.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -26,6 +27,7 @@ public class User {
     @Column(name = "registration_time")
     private LocalDateTime registrationDateTime = LocalDateTime.now();
     private boolean status;
+    @JsonIgnore         // wykluczenie pola z API w formacie JSON
     @Transient
     private String secret = "SECRET CODE";
 

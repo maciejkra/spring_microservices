@@ -58,6 +58,10 @@ public class BlogController {
         Optional<Role> roleOptional = roleService.getRolerById(1L);
         return roleOptional.map(role -> userService.addUser(new User(email, password), role)).orElse(null);
     }
+    @GetMapping("/users")
+    public List<User> getAllUsers(){
+        return userService.getAllUsers();
+    }
     @PostMapping("/posts/addPost")
     public boolean addPost(
           @Valid @ModelAttribute("postDto") PostDto postDto,

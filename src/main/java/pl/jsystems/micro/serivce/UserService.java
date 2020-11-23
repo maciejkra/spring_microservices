@@ -6,6 +6,7 @@ import pl.jsystems.micro.model.Role;
 import pl.jsystems.micro.model.User;
 import pl.jsystems.micro.repository.UserRepository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -33,4 +34,8 @@ public class UserService {
     public Optional<User> getUserById(long userId){
         return userRepository.findById(userId);
     }
+    public List<User> getAllUsers(){
+        return userRepository.findAll();
+    }
+
 }
