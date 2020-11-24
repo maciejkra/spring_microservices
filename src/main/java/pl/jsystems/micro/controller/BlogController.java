@@ -3,6 +3,7 @@ package pl.jsystems.micro.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
@@ -93,31 +94,41 @@ public class BlogController {
             ).withRel("userLinkTempl");
 
             EntityModel<User> userEntityModel = new EntityModel<>(user);
-            user.getRoles().stream().forEach(role -> {
-                EntityModel<Role> roleEntityModel = new EntityModel<>(role);
-                Link roleLink = linkTo(
-                        methodOn(BlogController.class).getRoleById(role.getRoleId())
-                ).withSelfRel();
-                Link roleLinkTempl = linkTo(
-                        methodOn(BlogController.class).getRoleById(null)
-                ).withRel("roleLinkTempl");
-                userEntityModel.add(roleLink,roleLinkTempl);
-                roleEntityModel.add(roleLink,roleLinkTempl);
-            });
+            if(user.getRoles().size() > 0) {
+                for (Role r : user.getRoles()) {
+                    Link roleLink = linkTo(
+                            methodOn(BlogController.class).getRoleById(r.getRoleId())
+                    ).withSelfRel();
+                    Link roleLinkTempl = linkTo(
+                            methodOn(BlogController.class).getRoleById(null)
+                    ).withRel("roleLinkTempl");
+                    r.add(roleLink, roleLinkTempl);
+                }
+            }
             userEntityModel.add(userLink, userLinkTempl);
             return userEntityModel;
         }
         return null;
     }
     @GetMapping("/users")
-    public List<EntityModel<User>> getAllUsers() {
+    public CollectionModel<User> getAllUsers() {
         List<User> users = userService.getAllUsers();
-        Link usersLinkTempl = linkTo(methodOn(BlogController.class).getAllUsers()).withRel("usersLinkTempl");
-        Link userLinkTempl = linkTo(methodOn(BlogController.class).getUserById(null)).withRel("userLinkTempl");
         for(User user : users) {
-
+            user.add(
+                    linkTo(methodOn(BlogController.class).getRoleById(user.getUserId()))
+                            .withSelfRel());
+            user.add(linkTo(methodOn(BlogController.class).getRoleById(user.getUserId()))
+                    .withRel("userLinkTempl"));
+            if(user.getRoles().size() > 0){
+                for(Role r : user.getRoles()) {
+                    Link rolesLink = linkTo(methodOn(BlogController.class).getRoleById(r.getRoleId())).withRel("rolesLinkTempl");
+                    r.add(rolesLink);
+                }
+            }
         }
-        return null;
+        Link link = linkTo(BlogController.class).withSelfRel();
+        CollectionModel<User> result = new CollectionModel<>(users, link);
+        return result;
     }
 
     @PostMapping("/posts/addPost")
