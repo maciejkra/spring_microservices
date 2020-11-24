@@ -110,14 +110,17 @@ public class BlogController {
     @GetMapping("/users")
     public CollectionModel<User> getAllUsers() {
         List<User> users = userService.getAllUsers();
-        for(User user : users) {
-            user.add(linkTo(methodOn(BlogController.class).getRoleById(user.getUserId())).withSelfRel());
-            user.add(linkTo(methodOn(BlogController.class).getRoleById(user.getUserId())).withRel("userLinkTempl"));
+        for(final User user : users) {
+            user.add(linkTo(methodOn(BlogController.class).getUserById(user.getUserId())).withSelfRel());
+            user.add(linkTo(methodOn(BlogController.class).getUserById(null)).withRel("userLinkTempl"));
             if(user.getRoles().size() > 0){
-                for(Role r : user.getRoles()) {
-                    Link roleLink = linkTo(methodOn(BlogController.class).getRoleById(r.getRoleId())).withSelfRel();
-                    Link roleLinkTempl = linkTo(methodOn(BlogController.class).getRoleById(null)).withRel("rolesLinkTempl");
-                    r.add(roleLink, roleLinkTempl);
+                for(final Role r : user.getRoles()) {
+                    Link roleLink = linkTo(methodOn(BlogController.class)
+                            .getRoleById(r.getRoleId())).withSelfRel();
+                    Link roleLinkTempl = linkTo(methodOn(BlogController.class)
+                            .getRoleById(null)).withRel("rolesLinkTempl");
+                    r.add(roleLink);
+                    r.add(roleLinkTempl);
                 }
             }
         }
