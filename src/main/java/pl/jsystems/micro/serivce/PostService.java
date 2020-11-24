@@ -47,4 +47,7 @@ public class PostService {
             postRepository.saveAll(authorPosts);
         }
     }
+    public void updateRemovedAuthorPosts(User admin){
+        postRepository.updateRemovedAuthorPosts(admin);
+    }
 }
