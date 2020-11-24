@@ -1,6 +1,8 @@
 package pl.jsystems.micro.serivce;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import pl.jsystems.micro.model.Post;
@@ -31,4 +33,11 @@ public class PostService {
     public List<Post> getAllPostsOrdered(String fieldName, Sort.Direction sortDirection){
         return postRepository.findAll(Sort.by(sortDirection,fieldName));
     }
+    public Page getAllPostsPaggingAndSorting(int pageSize, int pageIndex){
+        // pageSize - ilość obiektów w stronicy
+        // pageIndex - kolejna strona zaczynając od 0
+        return postRepository.findAll(PageRequest.of(pageIndex, pageSize,
+                Sort.by(Sort.Direction.DESC, "publicationDateTime")));
+    }
+
 }

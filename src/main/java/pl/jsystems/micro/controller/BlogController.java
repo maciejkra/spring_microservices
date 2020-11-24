@@ -1,6 +1,7 @@
 package pl.jsystems.micro.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.validation.*;
 import org.springframework.web.bind.annotation.*;
@@ -80,6 +81,14 @@ public class BlogController {
         postService.addPost(postDto, userOptional.get());
         return true;
     }
+    @PutMapping("/users/activate")
+    public boolean activateUser(@RequestParam("userId") int userId){
+        return userService.activateUserById(userId);
+    }
+    @DeleteMapping("/users/deleteUser")
+    public boolean deleteUserById(@RequestParam("userId") int userId){
+        return userService.deleteUserById(userId);
+    }
     // [
     //     "IT" : 1,
     //     "DEV_OPS" : 2
@@ -97,5 +106,12 @@ public class BlogController {
         return postService.getAllPostsOrdered(
                 fieldName,
                 isAscDirection ? Sort.Direction.ASC : Sort.Direction.DESC);
+    }
+    @GetMapping("/posts/page={pageIndex}")
+    public Page getAllPostsPaggingAndSorting(
+            @PathVariable("pageIndex") int pageIndex,
+            @RequestParam("pageSize") int pageSize
+    ){
+        return postService.getAllPostsPaggingAndSorting(pageSize, pageIndex);
     }
 }
