@@ -87,24 +87,21 @@ public class BlogController {
             User user = userOptional.get();
             // link bezpośredni do wyszukanego użytkownika
             Link userLink = linkTo(
-                    methodOn(BlogController.class).getUserById(userId)
-            ).withSelfRel();
+                    methodOn(BlogController.class).getUserById(userId)).withSelfRel();
+            user.add(userLink);
             Link userLinkTempl = linkTo(
-                    methodOn(BlogController.class).getUserById(null)
-            ).withRel("userLinkTempl");
-
-            EntityModel<User> userEntityModel = new EntityModel<>(user);
+                    methodOn(BlogController.class).getUserById(null)).withRel("userLinkTempl");
+            user.add(userLinkTempl);
             if(user.getRoles().size() > 0) {
                 for (Role r : user.getRoles()) {
                     Link roleLink = linkTo(
-                            methodOn(BlogController.class).getRoleById(r.getRoleId())
-                    ).withSelfRel();
+                            methodOn(BlogController.class).getRoleById(r.getRoleId())).withSelfRel();
                     Link roleLinkTempl = linkTo(
-                            methodOn(BlogController.class).getRoleById(null)
-                    ).withRel("roleLinkTempl");
+                            methodOn(BlogController.class).getRoleById(null)).withRel("roleLinkTempl");
                     r.add(roleLink, roleLinkTempl);
                 }
             }
+            EntityModel<User> userEntityModel = new EntityModel<>(user);
             userEntityModel.add(userLink, userLinkTempl);
             return userEntityModel;
         }
@@ -114,20 +111,19 @@ public class BlogController {
     public CollectionModel<User> getAllUsers() {
         List<User> users = userService.getAllUsers();
         for(User user : users) {
-            user.add(
-                    linkTo(methodOn(BlogController.class).getRoleById(user.getUserId()))
-                            .withSelfRel());
-            user.add(linkTo(methodOn(BlogController.class).getRoleById(user.getUserId()))
-                    .withRel("userLinkTempl"));
+            user.add(linkTo(methodOn(BlogController.class).getRoleById(user.getUserId())).withSelfRel());
+            user.add(linkTo(methodOn(BlogController.class).getRoleById(user.getUserId())).withRel("userLinkTempl"));
             if(user.getRoles().size() > 0){
                 for(Role r : user.getRoles()) {
-                    Link rolesLink = linkTo(methodOn(BlogController.class).getRoleById(r.getRoleId())).withRel("rolesLinkTempl");
-                    r.add(rolesLink);
+                    Link roleLink = linkTo(methodOn(BlogController.class).getRoleById(r.getRoleId())).withSelfRel();
+                    Link roleLinkTempl = linkTo(methodOn(BlogController.class).getRoleById(null)).withRel("rolesLinkTempl");
+                    r.add(roleLink, roleLinkTempl);
                 }
             }
         }
-        Link link = linkTo(BlogController.class).withSelfRel();
-        CollectionModel<User> result = new CollectionModel<>(users, link);
+        Link usersLink = linkTo(methodOn(BlogController.class).getAllUsers()).withSelfRel();
+        CollectionModel<User> result = new CollectionModel<>(users);
+        result.add(usersLink);
         return result;
     }
 
