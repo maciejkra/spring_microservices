@@ -87,7 +87,8 @@ public class BlogController {
     }
     @DeleteMapping("/users/deleteUser")
     public boolean deleteUserById(@RequestParam("userId") int userId){
-        return userService.deleteUserById(userId);
+        postService.updatePostsAuthor(userService.getUserById(userId)); // najpierw w miejsce usuwanego autora wprowadzamy null
+        return userService.deleteUserById(userId);                      // usuwamy autora wraz z powiązaniem z uprawnieniami
     }
     // [
     //     "IT" : 1,
