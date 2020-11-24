@@ -37,7 +37,7 @@ public class User {
     }
     @ManyToMany(
             fetch = FetchType.EAGER,
-            cascade = CascadeType.ALL
+            cascade = CascadeType.DETACH    // CascaseType.DETACH, the child entity will also get removed from the persistent context
     )                       //REALCJA N:M
     @JoinTable(
             name = "users_to_roles",

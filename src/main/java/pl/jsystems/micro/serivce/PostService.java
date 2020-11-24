@@ -11,6 +11,7 @@ import pl.jsystems.micro.model.dtos.PostDto;
 import pl.jsystems.micro.repository.PostRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PostService {
@@ -39,5 +40,11 @@ public class PostService {
         return postRepository.findAll(PageRequest.of(pageIndex, pageSize,
                 Sort.by(Sort.Direction.DESC, "publicationDateTime")));
     }
-
+    public void updatePostsAuthor(Optional<User> authorOptional){
+        if(authorOptional.isPresent()){
+            List<Post> authorPosts = postRepository.findAllByAuthor(authorOptional.get());
+            authorPosts.stream().forEach(post -> post.setAuthor(null));
+            postRepository.saveAll(authorPosts);
+        }
+    }
 }

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import pl.jsystems.micro.model.Post;
+import pl.jsystems.micro.model.User;
 
 import java.util.List;
 
@@ -20,4 +21,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Object[]> getCategoryStatistics();
 
     Page<Post> findAll(Pageable pageable);
+    List<Post> findAllByAuthor(User author);
 }
