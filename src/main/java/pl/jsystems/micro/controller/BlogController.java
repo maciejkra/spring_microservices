@@ -6,6 +6,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.http.MediaType;
 import org.springframework.validation.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.function.EntityResponse;
@@ -17,6 +18,7 @@ import pl.jsystems.micro.serivce.PostService;
 import pl.jsystems.micro.serivce.RoleService;
 import pl.jsystems.micro.serivce.UserService;
 
+import javax.persistence.EntityManager;
 import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
@@ -27,9 +29,9 @@ import java.util.stream.Collectors;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-
+@RequestMapping(value = "/api/json", produces = MediaType.APPLICATION_JSON_VALUE)
 //@Controller       // -> zwraca szablony widoków
-@RestController     // klasa o secjalnym znaczeniu - mapująca adresy URL na wywołanie metod
+@RestController("blogControllerV1")    // klasa o specjalnym znaczeniu - mapująca adresy URL na wywołanie metod
 // -> zwraca API
 public class BlogController {
     private UserService userService;
@@ -71,8 +73,13 @@ public class BlogController {
         Optional<Role> roleOptional = roleService.getRolerById(1L);
         return roleOptional.map(role -> userService.addUser(new User(email, password), role)).orElse(null);
     }
+    @GetMapping("/roles/{roleId}")
+    public Role getRoleById(@PathVariable("roleId") Long roleId){
+        return roleService.getRolerById(roleId).get();
+    }
+
     // mapping produkuje JSON + HAL
-    @GetMapping(value = "/users/{userId}", produces = "application/hal+json")
+    @GetMapping(value = "/users/{userId}", produces = {"application/hal+json","application/json"})
     public EntityModel<User> getUserById(@PathVariable("userId") Long userId){
         Optional<User> userOptional = userService.getUserById(userId);
         if(userOptional.isPresent()){
@@ -84,17 +91,33 @@ public class BlogController {
             Link userLinkTempl = linkTo(
                     methodOn(BlogController.class).getUserById(null)
             ).withRel("userLinkTempl");
-//            RepresentationModel<User> userRepresentation = new RepresentationModel<>();
-//            userRepresentation.add(userLink,userLinkTempl);
+
             EntityModel<User> userEntityModel = new EntityModel<>(user);
+            user.getRoles().stream().forEach(role -> {
+                EntityModel<Role> roleEntityModel = new EntityModel<>(role);
+                Link roleLink = linkTo(
+                        methodOn(BlogController.class).getRoleById(role.getRoleId())
+                ).withSelfRel();
+                Link roleLinkTempl = linkTo(
+                        methodOn(BlogController.class).getRoleById(null)
+                ).withRel("roleLinkTempl");
+                userEntityModel.add(roleLink,roleLinkTempl);
+                roleEntityModel.add(roleLink,roleLinkTempl);
+            });
             userEntityModel.add(userLink, userLinkTempl);
             return userEntityModel;
         }
         return null;
     }
     @GetMapping("/users")
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    public List<EntityModel<User>> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        Link usersLinkTempl = linkTo(methodOn(BlogController.class).getAllUsers()).withRel("usersLinkTempl");
+        Link userLinkTempl = linkTo(methodOn(BlogController.class).getUserById(null)).withRel("userLinkTempl");
+        for(User user : users) {
+
+        }
+        return null;
     }
 
     @PostMapping("/posts/addPost")

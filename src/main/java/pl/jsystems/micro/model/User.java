@@ -5,10 +5,12 @@ import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+@XmlRootElement     // do foramtowania xml
 //@ToString
 //@Setter
 //@Getter   // autometycznie generuje gettery
