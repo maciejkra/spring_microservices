@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
+import org.springframework.hateoas.RepresentationModel;
 import pl.jsystems.micro.model.enums.Category;
 
 import javax.persistence.*;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Table(name = "posts", indexes = @Index(name = "pdt", columnList = "publicationDateTime"))
 @Entity
-public class Post {
+public class Post extends RepresentationModel<Post> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long postId;

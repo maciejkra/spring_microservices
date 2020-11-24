@@ -2,6 +2,7 @@ package pl.jsystems.micro.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -16,7 +17,7 @@ import java.util.Set;
 @NoArgsConstructor      // automatycznie generuje konstruktor bezparametrowy
 @Entity     // klasa mapowana na tabelkę db
 @Table(name = "users")
-public class User {
+public class User extends RepresentationModel<User>{
     @Id                                                 // PRIMARY KEY
     @GeneratedValue(strategy = GenerationType.IDENTITY) // AUTO INKREMENTACJA
 //    @Column(name = "user_id")                         // tak jest domyślnie mapowany CS

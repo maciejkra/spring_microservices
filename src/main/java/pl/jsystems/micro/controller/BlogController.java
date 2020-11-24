@@ -3,6 +3,9 @@ package pl.jsystems.micro.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.validation.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.function.EntityResponse;
@@ -20,6 +23,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 
 //@Controller       // -> zwraca szablony widoków
 @RestController     // klasa o secjalnym znaczeniu - mapująca adresy URL na wywołanie metod
@@ -64,7 +71,27 @@ public class BlogController {
         Optional<Role> roleOptional = roleService.getRolerById(1L);
         return roleOptional.map(role -> userService.addUser(new User(email, password), role)).orElse(null);
     }
-
+    // mapping produkuje JSON + HAL
+    @GetMapping(value = "/users/{userId}", produces = "application/hal+json")
+    public EntityModel<User> getUserById(@PathVariable("userId") Long userId){
+        Optional<User> userOptional = userService.getUserById(userId);
+        if(userOptional.isPresent()){
+            User user = userOptional.get();
+            // link bezpośredni do wyszukanego użytkownika
+            Link userLink = linkTo(
+                    methodOn(BlogController.class).getUserById(userId)
+            ).withSelfRel();
+            Link userLinkTempl = linkTo(
+                    methodOn(BlogController.class).getUserById(null)
+            ).withRel("userLinkTempl");
+//            RepresentationModel<User> userRepresentation = new RepresentationModel<>();
+//            userRepresentation.add(userLink,userLinkTempl);
+            EntityModel<User> userEntityModel = new EntityModel<>(user);
+            userEntityModel.add(userLink, userLinkTempl);
+            return userEntityModel;
+        }
+        return null;
+    }
     @GetMapping("/users")
     public List<User> getAllUsers() {
         return userService.getAllUsers();
@@ -133,7 +160,6 @@ public class BlogController {
         boolean result = false;
         if (userService.getUserById(adminId).isPresent()) {
             User admin = userService.getUserById(adminId).get();
-
             if (admin.getRoles().contains(roleService.getRolerById(2L).get())) {
                 postService.updateRemovedAuthorPosts(admin);
                 result = true;
